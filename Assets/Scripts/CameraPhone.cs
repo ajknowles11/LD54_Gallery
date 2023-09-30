@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator))]
 public class CameraPhone : MonoBehaviour
@@ -17,6 +18,7 @@ public class CameraPhone : MonoBehaviour
 
     [SerializeField] private GameObject buttonIcon;
     [SerializeField] private Animator apertureAnimator;
+    [SerializeField] private Image lastPic;
 
     public float zoomAlpha = 0;
 
@@ -31,7 +33,8 @@ public class CameraPhone : MonoBehaviour
     
     public GameObject testObject;
 
-
+    private Rect _screenshotRect;
+    
     private void OnEnable()
     {
         RenderPipelineManager.endCameraRendering += RenderPipelineManager_endCameraRendering;
@@ -66,8 +69,18 @@ public class CameraPhone : MonoBehaviour
     {
         if (zoomAlpha >= 1)
         {
-            _screenshotQueued = true;
             apertureAnimator.Play("ApertureFlash", 0, 0);
+            
+            int width = (int)(PhotoHeightToScreen * PhotoAspect * Screen.height);
+            int height = (int)(PhotoHeightToScreen * Screen.height);
+            int x = (int)((Screen.width - width) / 2);
+            int y = (int)((Screen.height - height) / 2);
+            _screenshotRect = new Rect(x, y, width, height);
+            _screenshotQueued = true;
+            
+            var objectScreenPoint = _camera.WorldToScreenPoint(testObject.transform.position);
+            RaycastHit hit;
+            Debug.Log(_screenshotRect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, testObject.transform.position, out hit, layerMask) || hit.collider == testObject.GetComponent<Collider>()));
         }
     }
 
@@ -84,22 +97,13 @@ public class CameraPhone : MonoBehaviour
         }
 
         _screenshotQueued = false;
-        int width = (int)(PhotoHeightToScreen * PhotoAspect * Screen.height);
-        int height = (int)(PhotoHeightToScreen * Screen.height);
-        
-        int x = (int)((Screen.width - width) / 2);
-        int y = (int)((Screen.height - height) / 2);
-        Texture2D screenshotTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
-        Rect rect = new Rect(x, y, width, height);
-        screenshotTexture.ReadPixels(rect, 0, 0);
+        Texture2D screenshotTexture = new Texture2D((int)_screenshotRect.width, (int)_screenshotRect.height, TextureFormat.RGB24, false, true);
+        screenshotTexture.ReadPixels(_screenshotRect, 0, 0);
         //screenshotTexture.Compress(false);
+        // Resize image to save ram
         screenshotTexture.Apply();
-
-        byte[] byteArray = screenshotTexture.EncodeToPNG();
-        System.IO.File.WriteAllBytes(Application.dataPath + "/CameraScreenshot.png", byteArray);
-
-        var objectScreenPoint = _camera.WorldToScreenPoint(testObject.transform.position);
-        RaycastHit hit;
-        Debug.Log(rect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, testObject.transform.position, out hit, layerMask) || hit.collider == testObject.GetComponent<Collider>()));
+        
+        lastPic.sprite = Sprite.Create(screenshotTexture, new Rect(0, 0, screenshotTexture.width, screenshotTexture.height),
+            new Vector2((float)screenshotTexture.width / 2, (float)screenshotTexture.height / 2));
     }
 }
