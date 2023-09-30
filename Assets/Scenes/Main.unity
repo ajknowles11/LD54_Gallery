@@ -386,6 +386,7 @@ GameObject:
   m_Component:
   - component: {fileID: 613583227}
   - component: {fileID: 613583228}
+  - component: {fileID: 613583229}
   m_Layer: 0
   m_Name: CameraPhone
   m_TagString: Untagged
@@ -427,6 +428,27 @@ MonoBehaviour:
   hand: {fileID: 293847487}
   handZoomed: {fileID: 1690958572}
   zoomAlpha: 0
+--- !u!95 &613583229
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613583226}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6c0545c13c80a1741a2addce0fb830e7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &821997017
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,6 +584,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 14d884ae-9197-4b97-a0ca-697ca6f72c74
     m_ActionName: Player/Jump[/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 821997022}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnInputZoom
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 683f7894-2721-41f7-ab39-be53d9ff40ae
+    m_ActionName: Player/Zoom[/Mouse/rightButton]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -790,6 +828,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Phone
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 327b2c1c4efac114ab6ad1c753f7c8d5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

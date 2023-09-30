@@ -86,37 +86,25 @@ public class PlayerController : MonoBehaviour
 
     public void OnInputLook(InputAction.CallbackContext ctx)
     {
-        if (Application.isFocused)
-        {
-            _lookInput = ctx.ReadValue<Vector2>();
-        }
-        else
-        {
-            _lookInput = Vector2.zero;
-        }
+        _lookInput = ctx.ReadValue<Vector2>();
     }
     
     public void OnInputMove(InputAction.CallbackContext ctx)
     {
-        if (Application.isFocused)
-        {
-            _movementInput = ctx.ReadValue<Vector2>();
-        }
-        else
-        {
-            _movementInput = Vector2.zero;
-        }
+        _movementInput = ctx.ReadValue<Vector2>();
     }
 
     public void OnInputJump(InputAction.CallbackContext ctx)
     {
-        if (Application.isFocused && ctx.performed)
+        _hasJustJumped = ctx.performed;
+    }
+
+    public void OnInputZoom(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
         {
-            _hasJustJumped = true;
-        }
-        else
-        {
-            _hasJustJumped = false;
+            phone.ToggleZoomAnim();
         }
     }
+    
 }
