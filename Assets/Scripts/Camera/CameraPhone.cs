@@ -6,6 +6,17 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
+public class CapturedImage
+{
+    public CapturedImage(Sprite sprite, List<Capturable> captured)
+    {
+        Sprite = sprite;
+        Captured = captured;
+    }
+    public readonly Sprite Sprite;
+    public readonly List<Capturable> Captured;
+};
+
 [RequireComponent(typeof(Animator))]
 public class CameraPhone : MonoBehaviour
 {
@@ -32,6 +43,11 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
 
     private Rect _screenshotRect;
+    private List<Capturable> _captured = new();
+
+    private int _storageSize = 3;
+    private List<CapturedImage> _screenshots = new();
+    [SerializeField] private GameObject storageWarning;
     
     private void OnEnable()
     {
@@ -65,6 +81,10 @@ public class CameraPhone : MonoBehaviour
 
     public void TakePicture()
     {
+        if (_screenshots.Count >= _storageSize)
+        {
+            return;
+        }
         if (zoomAlpha >= 1)
         {
             apertureAnimator.Play("ApertureFlash", 0, 0);
@@ -81,14 +101,19 @@ public class CameraPhone : MonoBehaviour
                 var objectScreenPoint = _camera.WorldToScreenPoint(obj.transform.position);
                 RaycastHit hit;
                 bool captured = _screenshotRect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, obj.transform.position, out hit, layerMask) || hit.collider == obj.Collider);
-                if (captured) Debug.Log(obj.name);
+                if (captured) _captured.Add(obj);
             }
         }
     }
 
+    private void UpdateImages()
+    {
+        lastPic.sprite = _screenshots[^1].Sprite;
+    }
+
     public void ToggleButtonIcon(bool pressed)
     {
-        buttonIcon.SetActive(pressed);
+        buttonIcon.SetActive(pressed && _screenshots.Count < _storageSize);
     }
 
     private void RenderPipelineManager_endCameraRendering(ScriptableRenderContext ctx, Camera cam)
@@ -104,8 +129,9 @@ public class CameraPhone : MonoBehaviour
         //screenshotTexture.Compress(false);
         // Resize image to save ram
         screenshotTexture.Apply();
-        
-        lastPic.sprite = Sprite.Create(screenshotTexture, new Rect(0, 0, screenshotTexture.width, screenshotTexture.height),
+        Sprite screenshotSprite = Sprite.Create(screenshotTexture, new Rect(0, 0, screenshotTexture.width, screenshotTexture.height),
             new Vector2((float)screenshotTexture.width / 2, (float)screenshotTexture.height / 2));
+        _screenshots.Add(new CapturedImage(screenshotSprite, _captured));
+        UpdateImages();
     }
 }

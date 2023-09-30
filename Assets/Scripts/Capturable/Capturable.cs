@@ -7,7 +7,7 @@ using UnityEngine;
 public class Capturable : MonoBehaviour
 {
     [NonSerialized]
-    public static HashSet<Capturable> Rendered = new HashSet<Capturable>();
+    public static HashSet<Capturable> Rendered = new();
     [NonSerialized]
     public Collider Collider;
 
