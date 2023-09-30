@@ -7,9 +7,9 @@ public class CameraPhone : MonoBehaviour
 {
     [SerializeField] private GameObject phoneNormal;
     [SerializeField] private GameObject phoneHollow;
-
-    [SerializeField] private Vector3 zoomPosition;
-    [SerializeField] private Quaternion zoomRotation;
+    
+    [SerializeField] private Transform hand;
+    [SerializeField] private Transform handZoomed;
 
     public float zoomAlpha = 0;
     
@@ -19,10 +19,10 @@ public class CameraPhone : MonoBehaviour
         phoneHollow.SetActive(false);
     }
 
-    private void Update()
+    public void UpdateTransform()
     {
-        transform.localPosition = Vector3.Lerp(Vector3.zero, zoomPosition, zoomAlpha);
-        transform.localRotation = Quaternion.Lerp(Quaternion.identity, zoomRotation, zoomAlpha);
+        transform.position = Vector3.Lerp(hand.position, handZoomed.position, zoomAlpha);
+        transform.rotation = Quaternion.Lerp(hand.rotation, handZoomed.rotation, zoomAlpha);
     }
 
     private void SetHollow(bool hollow)

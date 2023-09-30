@@ -22,7 +22,9 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] [Tooltip("Jump velocity, in m/s")]
     private float jumpVelocity = 3.0f;
-    
+
+
+    [SerializeField] private CameraPhone phone;
     
     private CharacterController _controller;
     private Camera _camera;
@@ -49,6 +51,7 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         UpdateLook();
+        phone.UpdateTransform();
     }
 
     private void UpdateLook()
