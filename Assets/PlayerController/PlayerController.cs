@@ -110,7 +110,14 @@ public class PlayerController : MonoBehaviour
     public void OnTakePicture(InputAction.CallbackContext ctx)
     {
         if (ctx.performed)
+        {
             phone.TakePicture();
+            phone.ToggleButtonIcon(true);
+        }
+        else if (ctx.canceled)
+        {
+            phone.ToggleButtonIcon(false);
+        }
     }
     
 }

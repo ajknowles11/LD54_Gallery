@@ -15,6 +15,9 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private Transform hand;
     [SerializeField] private Transform handZoomed;
 
+    [SerializeField] private GameObject buttonIcon;
+    [SerializeField] private Animator apertureAnimator;
+
     public float zoomAlpha = 0;
 
     private Animator _animator;
@@ -64,7 +67,13 @@ public class CameraPhone : MonoBehaviour
         if (zoomAlpha >= 1)
         {
             _screenshotQueued = true;
+            apertureAnimator.Play("ApertureFlash", 0, 0);
         }
+    }
+
+    public void ToggleButtonIcon(bool pressed)
+    {
+        buttonIcon.SetActive(pressed);
     }
 
     private void RenderPipelineManager_endCameraRendering(ScriptableRenderContext ctx, Camera cam)
