@@ -601,6 +601,7 @@ MonoBehaviour:
   hand: {fileID: 293847487}
   handZoomed: {fileID: 1690958572}
   zoomAlpha: 0
+  screenshotQueued: 0
 --- !u!95 &613583229
 Animator:
   serializedVersion: 5
@@ -916,7 +917,7 @@ GameObject:
   - component: {fileID: 1416694142}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -106,5 +106,11 @@ public class PlayerController : MonoBehaviour
             phone.ToggleZoomAnim();
         }
     }
+
+    public void OnTakePicture(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+            phone.TakePicture();
+    }
     
 }
