@@ -6,8 +6,6 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class CameraPhone : MonoBehaviour
 {
-    [SerializeField] private GameObject phoneNormal;
-    [SerializeField] private GameObject phoneHollow;
     
     [SerializeField] private Transform hand;
     [SerializeField] private Transform handZoomed;
@@ -22,8 +20,6 @@ public class CameraPhone : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _zoomDirParam = Animator.StringToHash("ZoomDir");
-        phoneNormal.SetActive(true);
-        phoneHollow.SetActive(false);
     }
 
     public void UpdateTransform()
@@ -36,13 +32,6 @@ public class CameraPhone : MonoBehaviour
     {
         _animator.SetFloat(_zoomDirParam, _zoomDir);
         _animator.Play("PhoneZoom", 0, zoomAlpha);
-        SetHollow(_zoomDir > 0);
         _zoomDir = -1 * _zoomDir;
-    }
-
-    private void SetHollow(bool hollow)
-    {
-        phoneNormal.SetActive(!hollow);
-        phoneHollow.SetActive(hollow);
     }
 }
