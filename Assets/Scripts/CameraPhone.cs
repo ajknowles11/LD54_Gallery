@@ -23,6 +23,10 @@ public class CameraPhone : MonoBehaviour
 
     private bool _screenshotQueued;
 
+    private Camera _camera;
+    
+    public GameObject testObject;
+
 
     private void OnEnable()
     {
@@ -36,6 +40,7 @@ public class CameraPhone : MonoBehaviour
 
     private void Start()
     {
+        _camera = Camera.main;
         _animator = GetComponent<Animator>();
         _zoomDirParam = Animator.StringToHash("ZoomDir");
     }
@@ -63,7 +68,7 @@ public class CameraPhone : MonoBehaviour
 
     private void RenderPipelineManager_endCameraRendering(ScriptableRenderContext ctx, Camera cam)
     {
-        if (cam != Camera.main || !_screenshotQueued)
+        if (cam != _camera || !_screenshotQueued)
         {
             return;
         }
@@ -82,5 +87,12 @@ public class CameraPhone : MonoBehaviour
 
         byte[] byteArray = screenshotTexture.EncodeToPNG();
         System.IO.File.WriteAllBytes(Application.dataPath + "/CameraScreenshot.png", byteArray);
+
+        float picHalfHeight = .009f * PhotoHeightToScreen / 2; //hard coded but works ok, I think
+        Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(Matrix4x4.Frustum(-picHalfHeight * PhotoAspect, 
+                                                                    picHalfHeight * PhotoAspect, -picHalfHeight, 
+                                                                    picHalfHeight, 0.01f, 1000) * _camera.worldToCameraMatrix);
+
+        Debug.Log(GeometryUtility.TestPlanesAABB(frustumPlanes, testObject.GetComponent<Collider>().bounds));
     }
 }
