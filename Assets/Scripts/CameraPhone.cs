@@ -24,6 +24,7 @@ public class CameraPhone : MonoBehaviour
     private bool _screenshotQueued;
 
     private Camera _camera;
+    [SerializeField] private LayerMask layerMask;
     
     public GameObject testObject;
 
@@ -88,11 +89,8 @@ public class CameraPhone : MonoBehaviour
         byte[] byteArray = screenshotTexture.EncodeToPNG();
         System.IO.File.WriteAllBytes(Application.dataPath + "/CameraScreenshot.png", byteArray);
 
-        float picHalfHeight = .009f * PhotoHeightToScreen / 2; //hard coded but works ok, I think
-        Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(Matrix4x4.Frustum(-picHalfHeight * PhotoAspect, 
-                                                                    picHalfHeight * PhotoAspect, -picHalfHeight, 
-                                                                    picHalfHeight, 0.01f, 1000) * _camera.worldToCameraMatrix);
-
-        Debug.Log(GeometryUtility.TestPlanesAABB(frustumPlanes, testObject.GetComponent<Collider>().bounds));
+        var objectScreenPoint = _camera.WorldToScreenPoint(testObject.transform.position);
+        RaycastHit hit;
+        Debug.Log(rect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, testObject.transform.position, out hit, layerMask) || hit.collider == testObject.GetComponent<Collider>()));
     }
 }
