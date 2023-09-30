@@ -30,8 +30,6 @@ public class CameraPhone : MonoBehaviour
 
     private Camera _camera;
     [SerializeField] private LayerMask layerMask;
-    
-    public GameObject testObject;
 
     private Rect _screenshotRect;
     
@@ -77,10 +75,14 @@ public class CameraPhone : MonoBehaviour
             int y = (int)((Screen.height - height) / 2);
             _screenshotRect = new Rect(x, y, width, height);
             _screenshotQueued = true;
-            
-            var objectScreenPoint = _camera.WorldToScreenPoint(testObject.transform.position);
-            RaycastHit hit;
-            Debug.Log(_screenshotRect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, testObject.transform.position, out hit, layerMask) || hit.collider == testObject.GetComponent<Collider>()));
+
+            foreach (var obj in Capturable.Rendered)
+            {
+                var objectScreenPoint = _camera.WorldToScreenPoint(obj.transform.position);
+                RaycastHit hit;
+                bool captured = _screenshotRect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, obj.transform.position, out hit, layerMask) || hit.collider == obj.Collider);
+                if (captured) Debug.Log(obj.name);
+            }
         }
     }
 
@@ -97,7 +99,7 @@ public class CameraPhone : MonoBehaviour
         }
 
         _screenshotQueued = false;
-        Texture2D screenshotTexture = new Texture2D((int)_screenshotRect.width, (int)_screenshotRect.height, TextureFormat.RGB24, false, true);
+        Texture2D screenshotTexture = new Texture2D((int)_screenshotRect.width, (int)_screenshotRect.height, TextureFormat.RGB24, false, true, true);
         screenshotTexture.ReadPixels(_screenshotRect, 0, 0);
         //screenshotTexture.Compress(false);
         // Resize image to save ram
