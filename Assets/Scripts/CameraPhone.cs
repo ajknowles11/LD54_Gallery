@@ -8,6 +8,9 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(Animator))]
 public class CameraPhone : MonoBehaviour
 {
+    private const float PhotoAspect = 1.0f; // width / height
+    private const float PhotoHeightToScreen = 0.8f;
+    private const int PhotoWidth = 256;
     
     [SerializeField] private Transform hand;
     [SerializeField] private Transform handZoomed;
@@ -66,11 +69,15 @@ public class CameraPhone : MonoBehaviour
         }
 
         _screenshotQueued = false;
-        int width = Screen.width;
-        int height = Screen.height;
+        int width = (int)(PhotoHeightToScreen * PhotoAspect * Screen.height);
+        int height = (int)(PhotoHeightToScreen * Screen.height);
+        
+        int x = (int)((Screen.width - width) / 2);
+        int y = (int)((Screen.height - height) / 2);
         Texture2D screenshotTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
-        Rect rect = new Rect(0, 0, width, height);
+        Rect rect = new Rect(x, y, width, height);
         screenshotTexture.ReadPixels(rect, 0, 0);
+        //screenshotTexture.Compress(false);
         screenshotTexture.Apply();
 
         byte[] byteArray = screenshotTexture.EncodeToPNG();
