@@ -119,5 +119,21 @@ public class PlayerController : MonoBehaviour
             phone.ToggleButtonIcon(false);
         }
     }
+
+    public void OnPrevPicture(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            phone.MoveCursor(true);
+        }
+    }
+
+    public void OnNextPicture(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            phone.MoveCursor(false);
+        }
+    }
     
 }

@@ -31,6 +31,8 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private Animator apertureAnimator;
     [SerializeField] private Image lastPic;
     [SerializeField] private List<Image> thumbnails = new();
+    private int _selectedThumbnail = -1;
+    [SerializeField] private GameObject cursor;
 
     public float zoomAlpha = 0;
 
@@ -70,6 +72,8 @@ public class CameraPhone : MonoBehaviour
         {
             Debug.LogError("not enough image objects for storage size");
         }
+        
+        UpdateCursorPosition();
     }
 
     public void UpdateTransform()
@@ -128,6 +132,27 @@ public class CameraPhone : MonoBehaviour
                 thumbnails[i].gameObject.SetActive(false);
             }
         }
+        UpdateCursorPosition();
+    }
+
+    private void UpdateCursorPosition()
+    {
+        if (_screenshots.Count == 0)
+        {
+            cursor.SetActive(false);
+            _selectedThumbnail = -1;
+        }
+        else if (_selectedThumbnail == -1)
+        {
+            cursor.SetActive(true);
+            _selectedThumbnail = 0;
+            cursor.transform.position = thumbnails[_selectedThumbnail].transform.position;
+        }
+        else
+        {
+            cursor.SetActive(true);
+            cursor.transform.position = thumbnails[_selectedThumbnail].transform.position;
+        }
     }
 
     public void ToggleButtonIcon(bool pressed)
@@ -152,5 +177,19 @@ public class CameraPhone : MonoBehaviour
             new Vector2((float)screenshotTexture.width / 2, (float)screenshotTexture.height / 2));
         _screenshots.Add(new CapturedImage(screenshotSprite, _captured));
         UpdateImages();
+    }
+
+    public void MoveCursor(bool prev)
+    {
+        if (prev && _selectedThumbnail > 0)
+        {
+            _selectedThumbnail -= 1;
+            UpdateCursorPosition();
+        }
+        else if (!prev && _screenshots.Count > 0 && _selectedThumbnail < _screenshots.Count - 1)
+        {
+            _selectedThumbnail += 1;
+            UpdateCursorPosition();
+        }
     }
 }
