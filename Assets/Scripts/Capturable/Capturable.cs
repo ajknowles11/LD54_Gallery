@@ -15,6 +15,8 @@ public class Capturable : MonoBehaviour
 
     public bool unstable;
 
+    public bool endsGame = false;
+
     private void Start()
     {
         Collider = GetComponent<Collider>();

@@ -8,6 +8,7 @@ public class PhotoDoor : MonoBehaviour
 {
     public List<Capturable> requiredCapturables;
     public List<GameObject> capturedIndicators;
+    public int storageSize;
     
     public PhotoDoor nextDoor;
 
@@ -29,7 +30,7 @@ public class PhotoDoor : MonoBehaviour
 
         if (nextDoor) {
             collectionManager.activeDoor = nextDoor;
-            collectionManager.cameraPhone.SetStorageSize(nextDoor.requiredCapturables.Count);
+            collectionManager.cameraPhone.SetStorageSize(nextDoor.storageSize);
         }
         doorObject.SetActive(false);
         Debug.Log("door opened");
@@ -50,6 +51,7 @@ public class PhotoDoor : MonoBehaviour
 
     public void UpdateImages()
     {
+        if (capturedIndicators.Count == 0) return;
         for (int i = 0; i < requiredCapturables.Count; i++)
         {
             capturedIndicators[i].SetActive(requiredCapturables[i].PhotoIndices.Count > 0);

@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class CapturedImage
@@ -47,9 +48,9 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
 
     private Rect _screenshotRect;
-    private List<Capturable> _ubstableCaptured = new();
+    private List<Capturable> _unstableCaptured = new();
 
-    private int _storageSize = 3;
+    private int _storageSize = 2;
     private List<CapturedImage> _screenshots = new();
     [SerializeField] private GameObject storageWarning;
 
@@ -140,7 +141,7 @@ public class CameraPhone : MonoBehaviour
                     CollectionManager.AddPhoto(obj, _screenshots.Count);
                     if (obj.unstable)
                     {
-                        _ubstableCaptured.Add(obj); // for deletion. Used only at the end of this frame in render callback
+                        _unstableCaptured.Add(obj); // for deletion. Used only at the end of this frame in render callback
                     }
                 }
             }
@@ -225,7 +226,13 @@ public class CameraPhone : MonoBehaviour
         screenshotTexture.Apply();
         Sprite screenshotSprite = Sprite.Create(screenshotTexture, new Rect(0, 0, screenshotTexture.width, screenshotTexture.height),
             new Vector2((float)screenshotTexture.width / 2, (float)screenshotTexture.height / 2));
-        _screenshots.Add(new CapturedImage(screenshotSprite, _ubstableCaptured));
+        List<Capturable> _thisUnstableCaptured = new();
+        foreach (var obj in _unstableCaptured)
+        {
+            _thisUnstableCaptured.Add(obj);
+        }
+        _screenshots.Add(new CapturedImage(screenshotSprite, _thisUnstableCaptured));
+        _unstableCaptured.Clear();
         UpdateImages();
     }
 
@@ -282,6 +289,10 @@ public class CameraPhone : MonoBehaviour
         {
             // "delete" the obj (but not really because we may respawn)
             obj.gameObject.SetActive(false);
+            if (obj.endsGame)
+            {
+                EndGame();
+            }
         }
         
         _screenshots.RemoveAt(_selectedThumbnail);
@@ -311,5 +322,10 @@ public class CameraPhone : MonoBehaviour
         {
             _selectedThumbnail = prevSelectedThumbnail;
         }
+    }
+
+    private void EndGame()
+    {
+        RestartManager.Restart();
     }
 }
