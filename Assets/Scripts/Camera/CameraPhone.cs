@@ -55,6 +55,7 @@ public class CameraPhone : MonoBehaviour
 
     private bool _triedDelete = false;
     [SerializeField] private GameObject deleteWarnImage;
+    [SerializeField] private GameObject deleteWarnPanel;
 
     [SerializeField] private Sprite defaultLastPic;
 
@@ -105,6 +106,7 @@ public class CameraPhone : MonoBehaviour
         {
             _triedDelete = false;
             deleteWarnImage.SetActive(false);
+            deleteWarnPanel.SetActive(false);
         }
         _animator.SetFloat(_zoomDirParam, _zoomDir);
         _animator.Play("PhoneZoom", 0, zoomAlpha);
@@ -233,6 +235,7 @@ public class CameraPhone : MonoBehaviour
         {
             _triedDelete = false;
             deleteWarnImage.SetActive(false);
+            deleteWarnPanel.SetActive(false);
         }
         if (zoomAlpha <= 0)
         {
@@ -260,12 +263,16 @@ public class CameraPhone : MonoBehaviour
         {
             _triedDelete = false;
             deleteWarnImage.SetActive(false);
+            deleteWarnPanel.SetActive(false);
             DeleteImage();
         }
         else
         {
             _triedDelete = true;
             deleteWarnImage.SetActive(true);
+            var panelPos = deleteWarnPanel.transform.localPosition;
+            deleteWarnPanel.transform.localPosition = new Vector3(panelPos.x, cursor.transform.localPosition.y, panelPos.z);
+            deleteWarnPanel.SetActive(true);
         }
     }
 
