@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class PhotoDoor : MonoBehaviour
 {
-    public List<string> requiredCapturedNames;
+    public List<Capturable> requiredCapturables;
     
     public PhotoDoor nextDoor;
     
     public void OpenDoor()
     {
         Debug.Log("door opened");
+    }
+
+    public void SetImageCaptured(Capturable obj, bool captured)
+    {
+        
     }
 }

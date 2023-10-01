@@ -137,7 +137,7 @@ public class CameraPhone : MonoBehaviour
                 bool captured = _screenshotRect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, obj.transform.position, out hit, layerMask) || hit.collider == obj.Collider);
                 if (captured)
                 {
-                    CollectionManager.AddPhoto(obj.name, _screenshots.Count);
+                    CollectionManager.AddPhoto(obj, _screenshots.Count);
                     if (obj.unstable)
                     {
                         _ubstableCaptured.Add(obj); // for deletion. Used only at the end of this frame in render callback

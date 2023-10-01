@@ -11,6 +11,8 @@ public class Capturable : MonoBehaviour
     [NonSerialized]
     public Collider Collider;
 
+    [NonSerialized] public List<int> PhotoIndices = new();
+
     public bool unstable;
 
     private void Start()

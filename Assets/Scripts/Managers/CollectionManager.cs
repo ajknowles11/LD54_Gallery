@@ -1,34 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-[System.Serializable]
-public class LoadCapturableData
-{
-    public string name;
-    public Sprite sprite;
-}
-
-public class RuntimeCapturableData
-{
-    public RuntimeCapturableData(List<int> idxs, CollectionImage image)
-    {
-        PhotoIndices = idxs;
-        SidebarImage = image;
-    }
-    public List<int> PhotoIndices;
-    public CollectionImage SidebarImage;
-
-}
-
 public class CollectionManager : MonoBehaviour
 {
-    [SerializeField] private LevelData levelData;
-    private Dictionary<string, RuntimeCapturableData> _capturableDictionary = new(); // holds name of obj and 
-
-    [SerializeField] private GameObject sidebar;
-    [SerializeField] private CollectionImage imagePrefab;
+    private List<Capturable> _allCapturables;
 
     [SerializeField] private PhotoDoor activeDoor;
     
@@ -42,62 +20,62 @@ public class CollectionManager : MonoBehaviour
         {
             Debug.LogError("No phone found in scene");
         }
+        
+        // get all capturables in level
+        _allCapturables = FindObjectsOfType<Capturable>().ToList();
 
         _cameraPhone.CollectionManager = this;
-        
-        // Populate dictionary and sidebar
-        foreach (var data in levelData.targets)
-        {
-            CollectionImage newImage = Instantiate(imagePrefab, sidebar.transform, false);
-            newImage.SetSprite(data.sprite);
-            _capturableDictionary.Add(data.name, new RuntimeCapturableData(new List<int>(), newImage));
-        }
     }
 
-    public void AddPhoto(string objName, int index)
+    public void AddPhoto(Capturable capturable, int index)
     {
-        var data = _capturableDictionary[objName];
-        data.PhotoIndices.Add(index);
-        // we know we have captured obj
-        data.SidebarImage.SetCollected(true);
+        capturable.PhotoIndices.Add(index);
 
         // now check if all door conditions satisfied
         if (activeDoor)
         {
-            foreach (var name in activeDoor.requiredCapturedNames)
+            bool canOpen = true;
+            foreach (var obj in activeDoor.requiredCapturables)
             {
-                if (_capturableDictionary[name].PhotoIndices.Count == 0)
+                if (obj.PhotoIndices.Count == 0)
                 {
-                    return;
+                    canOpen = false;
+                }
+                else
+                {
+                    activeDoor.SetImageCaptured(obj, true);
                 }
             }
-            activeDoor.OpenDoor();
-            activeDoor = activeDoor.nextDoor;
+
+            if (canOpen)
+            {
+                activeDoor.OpenDoor();
+                activeDoor = activeDoor.nextDoor;
+            }
         }
     }
 
     public void DeletePhoto(int index)
     {
         // Loop through all dictionary elements, removing index and decrementing any index greater by 1
-        foreach (var kvp in _capturableDictionary)
+        foreach (var obj in _allCapturables)
         {
-            var indices = kvp.Value.PhotoIndices;
-            for (int i = indices.Count - 1; i >= 0; i--)
+            for (int i = obj.PhotoIndices.Count - 1; i >= 0; i--)
             {
-                if (indices[i] == index)
+                if (obj.PhotoIndices[i] == index)
                 {
-                    indices.RemoveAt(i);
+                    obj.PhotoIndices.RemoveAt(i);
                 }
-                else if (indices[i] > index)
+                else if (obj.PhotoIndices[i] > index)
                 {
-                    indices[i] -= 1;
+                    obj.PhotoIndices[i] -= 1;
                 }
             }
             // check if no indices
-            if (indices.Count == 0)
+            if (obj.PhotoIndices.Count == 0)
             {
                 // not captured
-                kvp.Value.SidebarImage.SetCollected(false);
+                activeDoor.SetImageCaptured(obj, false);
             }
         }
     }
