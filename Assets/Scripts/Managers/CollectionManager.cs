@@ -32,10 +32,12 @@ public class CollectionManager : MonoBehaviour
     public void AddPhoto(Capturable capturable, int index)
     {
         capturable.PhotoIndices.Add(index);
+        if (!activeDoor) return;
         if (activeDoor.IsPlayerAt)
         {
             activeDoor.TryOpenDoor();
         }
+        activeDoor.UpdateImages();
     }
 
     public void DeletePhoto(int index)
@@ -55,5 +57,6 @@ public class CollectionManager : MonoBehaviour
                 }
             }
         }
+        if (activeDoor) activeDoor.UpdateImages();
     }
 }

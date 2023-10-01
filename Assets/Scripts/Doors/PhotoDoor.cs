@@ -7,6 +7,7 @@ using UnityEngine;
 public class PhotoDoor : MonoBehaviour
 {
     public List<Capturable> requiredCapturables;
+    public List<GameObject> capturedIndicators;
     
     public PhotoDoor nextDoor;
 
@@ -26,8 +27,10 @@ public class PhotoDoor : MonoBehaviour
             }
         }
 
-        collectionManager.activeDoor = nextDoor;
-        collectionManager.cameraPhone.SetStorageSize(nextDoor.requiredCapturables.Count);
+        if (nextDoor) {
+            collectionManager.activeDoor = nextDoor;
+            collectionManager.cameraPhone.SetStorageSize(nextDoor.requiredCapturables.Count);
+        }
         doorObject.SetActive(false);
         Debug.Log("door opened");
     }
@@ -43,5 +46,13 @@ public class PhotoDoor : MonoBehaviour
     {
         IsPlayerAt = false;
         Debug.Log("exited");
+    }
+
+    public void UpdateImages()
+    {
+        for (int i = 0; i < requiredCapturables.Count; i++)
+        {
+            capturedIndicators[i].SetActive(requiredCapturables[i].PhotoIndices.Count > 0);
+        }
     }
 }
