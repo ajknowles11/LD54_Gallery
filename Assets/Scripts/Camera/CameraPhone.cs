@@ -294,4 +294,22 @@ public class CameraPhone : MonoBehaviour
         UpdateImages();
         
     }
+
+    public void SetStorageSize(int size)
+    {
+        _storageSize = size;
+
+        int prevSelectedThumbnail = _selectedThumbnail;
+        
+        while (_screenshots.Count > size)
+        {
+            _selectedThumbnail = _screenshots.Count - 1;
+            DeleteImage();
+        }
+
+        if (prevSelectedThumbnail < _screenshots.Count)
+        {
+            _selectedThumbnail = prevSelectedThumbnail;
+        }
+    }
 }

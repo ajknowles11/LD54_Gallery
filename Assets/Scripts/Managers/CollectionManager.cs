@@ -8,50 +8,33 @@ public class CollectionManager : MonoBehaviour
 {
     private List<Capturable> _allCapturables;
 
-    [SerializeField] private PhotoDoor activeDoor;
+    public PhotoDoor activeDoor;
     
-    private CameraPhone _cameraPhone;
+    public CameraPhone cameraPhone;
 
     private void Start()
     {
         // Find phone camera in scene and give a reference to this object
-        _cameraPhone = FindObjectOfType<CameraPhone>();
-        if (!_cameraPhone)
+        if (!cameraPhone) cameraPhone = FindObjectOfType<CameraPhone>();
+        if (!cameraPhone)
         {
             Debug.LogError("No phone found in scene");
         }
         
         // get all capturables in level
         _allCapturables = FindObjectsOfType<Capturable>().ToList();
+        
+        cameraPhone.SetStorageSize(activeDoor.requiredCapturables.Count);
 
-        _cameraPhone.CollectionManager = this;
+        cameraPhone.CollectionManager = this;
     }
 
     public void AddPhoto(Capturable capturable, int index)
     {
         capturable.PhotoIndices.Add(index);
-
-        // now check if all door conditions satisfied
-        if (activeDoor)
+        if (activeDoor.IsPlayerAt)
         {
-            bool canOpen = true;
-            foreach (var obj in activeDoor.requiredCapturables)
-            {
-                if (obj.PhotoIndices.Count == 0)
-                {
-                    canOpen = false;
-                }
-                else
-                {
-                    activeDoor.SetImageCaptured(obj, true);
-                }
-            }
-
-            if (canOpen)
-            {
-                activeDoor.OpenDoor();
-                activeDoor = activeDoor.nextDoor;
-            }
+            activeDoor.TryOpenDoor();
         }
     }
 
@@ -70,12 +53,6 @@ public class CollectionManager : MonoBehaviour
                 {
                     obj.PhotoIndices[i] -= 1;
                 }
-            }
-            // check if no indices
-            if (obj.PhotoIndices.Count == 0)
-            {
-                // not captured
-                activeDoor.SetImageCaptured(obj, false);
             }
         }
     }
