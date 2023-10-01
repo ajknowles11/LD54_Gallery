@@ -139,5 +139,13 @@ public class PlayerController : MonoBehaviour
             phone.MoveCursor(false);
         }
     }
+
+    public void OnDeletePic(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            phone.TryDeleteImage();
+        }
+    }
     
 }

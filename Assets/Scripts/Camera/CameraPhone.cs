@@ -51,6 +51,11 @@ public class CameraPhone : MonoBehaviour
     private int _storageSize = 3;
     private List<CapturedImage> _screenshots = new();
     [SerializeField] private GameObject storageWarning;
+
+    private bool _triedDelete = false;
+    [SerializeField] private GameObject deleteWarnImage;
+
+    [SerializeField] private Sprite defaultLastPic;
     
     private void OnEnable()
     {
@@ -84,6 +89,11 @@ public class CameraPhone : MonoBehaviour
 
     public void ToggleZoomAnim()
     {
+        if (_triedDelete)
+        {
+            _triedDelete = false;
+            deleteWarnImage.SetActive(false);
+        }
         _animator.SetFloat(_zoomDirParam, _zoomDir);
         _animator.Play("PhoneZoom", 0, zoomAlpha);
         _zoomDir = -1 * _zoomDir;
@@ -118,7 +128,7 @@ public class CameraPhone : MonoBehaviour
 
     private void UpdateImages()
     {
-        lastPic.sprite = _screenshots[^1].Sprite;
+        lastPic.sprite = _screenshots.Count > 0 ? _screenshots[^1].Sprite : defaultLastPic;
         for (int i = 0; i < thumbnails.Count; i++)
         {
             if (i < _screenshots.Count)
@@ -146,6 +156,12 @@ public class CameraPhone : MonoBehaviour
         {
             cursor.SetActive(true);
             _selectedThumbnail = 0;
+            cursor.transform.position = thumbnails[_selectedThumbnail].transform.position;
+        }
+        else if (_selectedThumbnail >= _screenshots.Count)
+        {
+            cursor.SetActive(true);
+            _selectedThumbnail = _screenshots.Count - 1;
             cursor.transform.position = thumbnails[_selectedThumbnail].transform.position;
         }
         else
@@ -184,6 +200,11 @@ public class CameraPhone : MonoBehaviour
 
     public void MoveCursor(bool prev)
     {
+        if (_triedDelete)
+        {
+            _triedDelete = false;
+            deleteWarnImage.SetActive(false);
+        }
         if (zoomAlpha <= 0)
         {
             if (prev && _selectedThumbnail > 0)
@@ -197,5 +218,37 @@ public class CameraPhone : MonoBehaviour
                 UpdateCursorPosition();
             }
         }
+    }
+
+    public void TryDeleteImage()
+    {
+        if (zoomAlpha > 0 || _screenshots.Count == 0)
+        {
+            return;
+        }
+
+        if (_triedDelete)
+        {
+            _triedDelete = false;
+            deleteWarnImage.SetActive(false);
+            DeleteImage();
+        }
+        else
+        {
+            _triedDelete = true;
+            deleteWarnImage.SetActive(true);
+        }
+    }
+
+    private void DeleteImage()
+    {
+        _screenshots.RemoveAt(_selectedThumbnail);
+        
+        if (_selectedThumbnail > _screenshots.Count)
+        {
+            _selectedThumbnail -= 1;
+        }
+        
+        UpdateImages();
     }
 }
