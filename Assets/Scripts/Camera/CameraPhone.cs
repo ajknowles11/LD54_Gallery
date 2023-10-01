@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -58,6 +59,11 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private Sprite defaultLastPic;
 
     [SerializeField] private GameObject photosEmptyText;
+
+    [SerializeField] private TextMeshProUGUI storageCounterText;
+    [SerializeField] private Image storageBar;
+    [SerializeField] private Color goodColor;
+    [SerializeField] private Color badColor;
     
     private void OnEnable()
     {
@@ -148,6 +154,11 @@ public class CameraPhone : MonoBehaviour
         photosEmptyText.SetActive(_screenshots.Count == 0);
         storageWarning.SetActive(_screenshots.Count >= _storageSize);
         UpdateCursorPosition();
+
+        storageCounterText.text = _screenshots.Count + "/" + _storageSize;
+        float storageRatio = _screenshots.Count / (float)_storageSize;
+        storageBar.fillAmount = storageRatio;
+        storageBar.color = Color.Lerp(goodColor, badColor, storageRatio);
     }
 
     private void UpdateCursorPosition()
