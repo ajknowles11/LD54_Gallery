@@ -30,6 +30,7 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private GameObject buttonIcon;
     [SerializeField] private Animator apertureAnimator;
     [SerializeField] private Image lastPic;
+    [SerializeField] private List<Image> thumbnails = new();
 
     public float zoomAlpha = 0;
 
@@ -64,6 +65,11 @@ public class CameraPhone : MonoBehaviour
         _camera = Camera.main;
         _animator = GetComponent<Animator>();
         _zoomDirParam = Animator.StringToHash("ZoomDir");
+
+        if (_storageSize > thumbnails.Count)
+        {
+            Debug.LogError("not enough image objects for storage size");
+        }
     }
 
     public void UpdateTransform()
@@ -109,6 +115,19 @@ public class CameraPhone : MonoBehaviour
     private void UpdateImages()
     {
         lastPic.sprite = _screenshots[^1].Sprite;
+        for (int i = 0; i < thumbnails.Count; i++)
+        {
+            if (i < _screenshots.Count)
+            {
+                thumbnails[i].sprite = _screenshots[i].Sprite;
+                thumbnails[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                thumbnails[i].sprite = null;
+                thumbnails[i].gameObject.SetActive(false);
+            }
+        }
     }
 
     public void ToggleButtonIcon(bool pressed)
