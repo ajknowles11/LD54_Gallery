@@ -146,6 +146,7 @@ public class CameraPhone : MonoBehaviour
         }
 
         photosEmptyText.SetActive(_screenshots.Count == 0);
+        storageWarning.SetActive(_screenshots.Count >= _storageSize);
         UpdateCursorPosition();
     }
 
