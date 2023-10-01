@@ -62,6 +62,8 @@ public class CameraPhone : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI storageCounterText;
     [SerializeField] private Image storageBar;
+    [SerializeField] private TextMeshProUGUI camStorageCounterText;
+    [SerializeField] private Image camStorageBar;
     [SerializeField] private Color goodColor;
     [SerializeField] private Color badColor;
 
@@ -165,9 +167,12 @@ public class CameraPhone : MonoBehaviour
         UpdateCursorPosition();
 
         storageCounterText.text = _screenshots.Count + "/" + _storageSize;
+        camStorageCounterText.text = _screenshots.Count + "/" + _storageSize;
         float storageRatio = _screenshots.Count / (float)_storageSize;
         storageBar.fillAmount = storageRatio;
         storageBar.color = Color.Lerp(goodColor, badColor, storageRatio);
+        camStorageBar.fillAmount = storageRatio;
+        camStorageBar.color = Color.Lerp(goodColor, badColor, storageRatio);
     }
 
     private void UpdateCursorPosition()
