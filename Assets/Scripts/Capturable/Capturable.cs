@@ -11,6 +11,8 @@ public class Capturable : MonoBehaviour
     [NonSerialized]
     public Collider Collider;
 
+    public bool unstable;
+
     private void Start()
     {
         Collider = GetComponent<Collider>();

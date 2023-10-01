@@ -12,10 +12,10 @@ public class CapturedImage
     public CapturedImage(Sprite sprite, List<Capturable> captured)
     {
         Sprite = sprite;
-        Captured = captured;
+        UnstableCaptured = captured;
     }
     public readonly Sprite Sprite;
-    public readonly List<Capturable> Captured;
+    public readonly List<Capturable> UnstableCaptured; // for deletion, store any unstable in photo
 };
 
 [RequireComponent(typeof(Animator))]
@@ -47,7 +47,7 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
 
     private Rect _screenshotRect;
-    private List<Capturable> _captured = new();
+    private List<Capturable> _ubstableCaptured = new();
 
     private int _storageSize = 3;
     private List<CapturedImage> _screenshots = new();
@@ -133,8 +133,11 @@ public class CameraPhone : MonoBehaviour
                 bool captured = _screenshotRect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, obj.transform.position, out hit, layerMask) || hit.collider == obj.Collider);
                 if (captured)
                 {
-                    _captured.Add(obj); // this is used only at the end of this same frame, to 
                     CollectionManager.AddPhoto(obj.name, _screenshots.Count);
+                    if (obj.unstable)
+                    {
+                        _ubstableCaptured.Add(obj); // for deletion. Used only at the end of this frame in render callback
+                    }
                 }
             }
         }
@@ -211,12 +214,11 @@ public class CameraPhone : MonoBehaviour
         _screenshotQueued = false;
         Texture2D screenshotTexture = new Texture2D((int)_screenshotRect.width, (int)_screenshotRect.height, TextureFormat.RGB24, false, true, true);
         screenshotTexture.ReadPixels(_screenshotRect, 0, 0);
-        //screenshotTexture.Compress(false);
-        // Resize image to save ram
+        // Should resize texture here to save memory, but can't figure out easy way to do that
         screenshotTexture.Apply();
         Sprite screenshotSprite = Sprite.Create(screenshotTexture, new Rect(0, 0, screenshotTexture.width, screenshotTexture.height),
             new Vector2((float)screenshotTexture.width / 2, (float)screenshotTexture.height / 2));
-        _screenshots.Add(new CapturedImage(screenshotSprite, _captured));
+        _screenshots.Add(new CapturedImage(screenshotSprite, _ubstableCaptured));
         UpdateImages();
     }
 
@@ -264,13 +266,18 @@ public class CameraPhone : MonoBehaviour
 
     private void DeleteImage()
     {
+        foreach (var obj in _screenshots[_selectedThumbnail].UnstableCaptured)
+        {
+            // "delete" the obj (but not really because we may respawn)
+            obj.gameObject.SetActive(false);
+        }
+        
         _screenshots.RemoveAt(_selectedThumbnail);
         
         if (_selectedThumbnail > _screenshots.Count)
         {
             _selectedThumbnail -= 1;
         }
-        
         CollectionManager.DeletePhoto(_selectedThumbnail);
         UpdateImages();
         
