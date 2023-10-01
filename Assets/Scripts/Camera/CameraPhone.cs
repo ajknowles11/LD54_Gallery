@@ -7,6 +7,17 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
+public class CapturedImage
+{
+    public CapturedImage(Sprite sprite, List<Capturable> captured)
+    {
+        Sprite = sprite;
+        Captured = captured;
+    }
+    public readonly Sprite Sprite;
+    public readonly List<Capturable> Captured;
+};
+
 [RequireComponent(typeof(Animator))]
 public class CameraPhone : MonoBehaviour
 {
@@ -36,9 +47,10 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
 
     private Rect _screenshotRect;
+    private List<Capturable> _captured = new();
 
     private int _storageSize = 3;
-    private List<Sprite> _screenshots = new();
+    private List<CapturedImage> _screenshots = new();
     [SerializeField] private GameObject storageWarning;
 
     private bool _triedDelete = false;
@@ -121,6 +133,7 @@ public class CameraPhone : MonoBehaviour
                 bool captured = _screenshotRect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, obj.transform.position, out hit, layerMask) || hit.collider == obj.Collider);
                 if (captured)
                 {
+                    _captured.Add(obj); // this is used only at the end of this same frame, to 
                     CollectionManager.AddPhoto(obj.name, _screenshots.Count);
                 }
             }
@@ -129,12 +142,12 @@ public class CameraPhone : MonoBehaviour
 
     private void UpdateImages()
     {
-        lastPic.sprite = _screenshots.Count > 0 ? _screenshots[^1] : defaultLastPic;
+        lastPic.sprite = _screenshots.Count > 0 ? _screenshots[^1].Sprite : defaultLastPic;
         for (int i = 0; i < thumbnails.Count; i++)
         {
             if (i < _screenshots.Count)
             {
-                thumbnails[i].sprite = _screenshots[i];
+                thumbnails[i].sprite = _screenshots[i].Sprite;
                 thumbnails[i].gameObject.SetActive(true);
             }
             else
@@ -203,7 +216,7 @@ public class CameraPhone : MonoBehaviour
         screenshotTexture.Apply();
         Sprite screenshotSprite = Sprite.Create(screenshotTexture, new Rect(0, 0, screenshotTexture.width, screenshotTexture.height),
             new Vector2((float)screenshotTexture.width / 2, (float)screenshotTexture.height / 2));
-        _screenshots.Add(screenshotSprite);
+        _screenshots.Add(new CapturedImage(screenshotSprite, _captured));
         UpdateImages();
     }
 
