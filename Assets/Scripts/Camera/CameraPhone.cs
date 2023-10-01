@@ -56,6 +56,8 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private GameObject deleteWarnImage;
 
     [SerializeField] private Sprite defaultLastPic;
+
+    [SerializeField] private GameObject photosEmptyText;
     
     private void OnEnable()
     {
@@ -78,7 +80,7 @@ public class CameraPhone : MonoBehaviour
             Debug.LogError("not enough image objects for storage size");
         }
         
-        UpdateCursorPosition();
+        UpdateImages();
     }
 
     public void UpdateTransform()
@@ -142,6 +144,8 @@ public class CameraPhone : MonoBehaviour
                 thumbnails[i].gameObject.SetActive(false);
             }
         }
+
+        photosEmptyText.SetActive(_screenshots.Count == 0);
         UpdateCursorPosition();
     }
 
