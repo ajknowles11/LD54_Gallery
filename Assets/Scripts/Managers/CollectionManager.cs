@@ -30,6 +30,8 @@ public class CollectionManager : MonoBehaviour
     [SerializeField] private GameObject sidebar;
     [SerializeField] private CollectionImage imagePrefab;
 
+    [SerializeField] private PhotoDoor activeDoor;
+    
     private CameraPhone _cameraPhone;
 
     private void Start()
@@ -58,6 +60,20 @@ public class CollectionManager : MonoBehaviour
         data.PhotoIndices.Add(index);
         // we know we have captured obj
         data.SidebarImage.SetCollected(true);
+
+        // now check if all door conditions satisfied
+        if (activeDoor)
+        {
+            foreach (var name in activeDoor.requiredCapturedNames)
+            {
+                if (_capturableDictionary[name].PhotoIndices.Count == 0)
+                {
+                    return;
+                }
+            }
+            activeDoor.OpenDoor();
+            activeDoor = activeDoor.nextDoor;
+        }
     }
 
     public void DeletePhoto(int index)
