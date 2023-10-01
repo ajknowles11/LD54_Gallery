@@ -157,7 +157,10 @@ public class CameraPhone : MonoBehaviour
 
     public void ToggleButtonIcon(bool pressed)
     {
-        buttonIcon.SetActive(pressed && _screenshots.Count < _storageSize);
+        if (zoomAlpha >= 1)
+        {
+            buttonIcon.SetActive(pressed && _screenshots.Count < _storageSize);
+        }
     }
 
     private void RenderPipelineManager_endCameraRendering(ScriptableRenderContext ctx, Camera cam)
@@ -181,15 +184,18 @@ public class CameraPhone : MonoBehaviour
 
     public void MoveCursor(bool prev)
     {
-        if (prev && _selectedThumbnail > 0)
+        if (zoomAlpha <= 0)
         {
-            _selectedThumbnail -= 1;
-            UpdateCursorPosition();
-        }
-        else if (!prev && _screenshots.Count > 0 && _selectedThumbnail < _screenshots.Count - 1)
-        {
-            _selectedThumbnail += 1;
-            UpdateCursorPosition();
+            if (prev && _selectedThumbnail > 0)
+            {
+                _selectedThumbnail -= 1;
+                UpdateCursorPosition();
+            }
+            else if (!prev && _screenshots.Count > 0 && _selectedThumbnail < _screenshots.Count - 1)
+            {
+                _selectedThumbnail += 1;
+                UpdateCursorPosition();
+            }
         }
     }
 }
