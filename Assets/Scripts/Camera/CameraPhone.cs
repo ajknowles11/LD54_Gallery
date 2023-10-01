@@ -64,6 +64,8 @@ public class CameraPhone : MonoBehaviour
     [SerializeField] private Image storageBar;
     [SerializeField] private Color goodColor;
     [SerializeField] private Color badColor;
+
+    [NonSerialized] public CollectionManager CollectionManager;
     
     private void OnEnable()
     {
@@ -129,7 +131,11 @@ public class CameraPhone : MonoBehaviour
                 var objectScreenPoint = _camera.WorldToScreenPoint(obj.transform.position);
                 RaycastHit hit;
                 bool captured = _screenshotRect.Contains(objectScreenPoint) && (!Physics.Linecast(_camera.transform.position, obj.transform.position, out hit, layerMask) || hit.collider == obj.Collider);
-                if (captured) _captured.Add(obj);
+                if (captured)
+                {
+                    _captured.Add(obj); // this is used only at the end of this same frame, to 
+                    CollectionManager.AddPhoto(obj.name, _screenshots.Count);
+                }
             }
         }
     }
@@ -265,6 +271,8 @@ public class CameraPhone : MonoBehaviour
             _selectedThumbnail -= 1;
         }
         
+        CollectionManager.DeletePhoto(_selectedThumbnail);
         UpdateImages();
+        
     }
 }
