@@ -82,6 +82,10 @@ public class PlayerController : MonoBehaviour
         }
         Vector3 velocity = Time.deltaTime * movementSpeed * (transform.forward * _movementInput.y + transform.right * _movementInput.x) + Time.deltaTime * _yVelocity * Vector3.up;
         _controller.Move(velocity);
+        if (_controller.isGrounded)
+        {
+            _yVelocity = 0;
+        }
     }
 
     public void OnInputLook(InputAction.CallbackContext ctx)
